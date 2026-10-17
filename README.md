@@ -40,8 +40,8 @@ Vercel-ზე ფაილები მხოლოდ წასაკითხ�
 
 1. GitHub რეპო შემოიტანე Vercel-ში (Framework: **Next.js**, Build/Output/Install — override გამორთული).
 2. **Settings → Environment Variables** → დაამატე `ADMIN_PASSWORD`.
-3. **Storage** ტაბი → **Create** → **Blob** → შექმენი და **Connect** ამ პროექტზე.
-   Vercel ავტომატურად დაამატებს `BLOB_READ_WRITE_TOKEN`-ს.
+3. **Storage** ტაბი → **Create Storage** → **Blob** (Private ან Public — ორივე მუშაობს) → **Connect** ამ პროექტზე.
+   Vercel ავტომატურად დაამატებს `BLOB_STORE_ID`-ს (ან ძველ საცავებზე `BLOB_READ_WRITE_TOKEN`-ს).
 4. **Redeploy**.
 
 პირველ ჯერზე საიტი იყენებს რეპოში არსებულ `data/content.json`-ს. ადმინში პირველი
