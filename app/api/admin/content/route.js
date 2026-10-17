@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { isAuthed } from '@/lib/auth';
-import { getContent, isValidContent, saveContent } from '@/lib/content';
+import { getContent, hasBlob, isValidContent, saveContent } from '@/lib/content';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +18,7 @@ export async function PUT(request) {
     await saveContent(data);
   } catch (e) {
     return NextResponse.json(
-      { ok: false, error: process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN ? 'Vercel-ზე შენახვისთვის საჭიროა Blob Storage — იხ. README' : 'შენახვა ვერ მოხერხდა: ' + e.message },
+      { ok: false, error: process.env.VERCEL && !hasBlob() ? 'Blob Storage არ არის მიერთებული: Vercel → Storage → Blob → Connect, შემდეგ Redeploy' : 'შენახვა ვერ მოხერხდა: ' + e.message },
       { status: 500 }
     );
   }
