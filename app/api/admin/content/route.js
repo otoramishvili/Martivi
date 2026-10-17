@@ -18,7 +18,7 @@ export async function PUT(request) {
     await saveContent(data);
   } catch (e) {
     return NextResponse.json(
-      { ok: false, error: 'ფაილში ჩაწერა ვერ მოხერხდა (ჰოსტინგზე ფაილური სისტემა შეიძლება მხოლოდ წასაკითხი იყოს): ' + e.message },
+      { ok: false, error: process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN ? 'Vercel-ზე შენახვისთვის საჭიროა Blob Storage — იხ. README' : 'შენახვა ვერ მოხერხდა: ' + e.message },
       { status: 500 }
     );
   }
