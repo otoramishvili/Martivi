@@ -10,6 +10,9 @@ import { telHref, waHref } from '@/lib/format';
 // Read content.json on every request, so admin changes show immediately.
 export const dynamic = 'force-dynamic';
 
+// How many services fit in the hero panel before it shows a "+N more" tile.
+const HERO_MAX = 8;
+
 export async function generateMetadata() {
   const { settings: s, categories } = await getContent();
   return {
@@ -62,12 +65,18 @@ export default async function Home() {
                 <a href="#services">ყველა →</a>
               </div>
               <div className="hp-grid">
-                {cats.map((c) => (
+                {(cats.length > HERO_MAX ? cats.slice(0, HERO_MAX - 1) : cats).map((c) => (
                   <Link key={c.id} href={link(c)} className="hp-item">
                     <span className="hp-icon">{c.icon}</span>
                     <span className="hp-name">{c.name}</span>
                   </Link>
                 ))}
+                {cats.length > HERO_MAX && (
+                  <a href="#services" className="hp-item hp-more">
+                    <span className="hp-icon">+{cats.length - HERO_MAX + 1}</span>
+                    <span className="hp-name">სხვა სერვისი →</span>
+                  </a>
+                )}
               </div>
               <div className="hp-info">
                 <div><span>🕘</span>{s.hours}</div>
