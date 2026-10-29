@@ -17,6 +17,12 @@ export default function SearchBox({ categories }) {
     return out;
   }, [categories]);
 
+  // examples come from the current services, so they never mention removed ones
+  const placeholder = useMemo(() => {
+    const ex = categories.map((c) => c.subs[0]?.name || c.name).filter(Boolean).slice(0, 3);
+    return ex.length ? `რა გჭირდება? მაგ: ${ex.join(', ').toLowerCase()}…` : 'რა გჭირდება?';
+  }, [categories]);
+
   const term = q.trim().toLowerCase();
   const hits = term.length < 2 ? [] : index.filter((i) => `${i.label} ${i.sub}`.toLowerCase().includes(term)).slice(0, 7);
 
@@ -26,7 +32,7 @@ export default function SearchBox({ categories }) {
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="რა გჭირდება? მაგ: ონკანი, ჭაღი, კარადა…"
+        placeholder={placeholder}
         autoComplete="off"
       />
       <div className={'search-results' + (term.length >= 2 ? ' open' : '')}>

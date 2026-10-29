@@ -53,9 +53,11 @@ export default async function Home() {
                 <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
               </div>
 
-              <ul className="checks">
-                {(s.heroPoints || []).map((p) => <li key={p}>{p}</li>)}
-              </ul>
+              {s.heroPoints?.length ? (
+                <ul className="checks">
+                  {s.heroPoints.map((p) => <li key={p}>{p}</li>)}
+                </ul>
+              ) : null}
             </div>
 
             {/* real services + contact info */}
@@ -120,7 +122,8 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ---------- WHY US (dark) ---------- */}
+        {/* ---------- WHY US (dark) — hidden when the admin list is empty ---------- */}
+        {content.benefits?.length ? (
         <section className="section dark">
           <div className="dark-glow" aria-hidden="true" />
           <div className="wrap">
@@ -128,7 +131,7 @@ export default async function Home() {
               <span className="eyebrow">რატომ ჩვენ</span>
               <h2>ხელოსანი, რომელსაც ენდობი</h2>
             </div>
-            <div className="benefits">
+            <div className="benefits" style={{ '--n': content.benefits.length }}>
               {content.benefits.map((b, i) => (
                 <div key={i} className="benefit reveal" style={{ '--d': `${i * 70}ms` }}>
                   <span className="b-num">0{i + 1}</span>
@@ -140,6 +143,7 @@ export default async function Home() {
             </div>
           </div>
         </section>
+        ) : null}
 
         {/* ---------- HOW IT WORKS ---------- */}
         <section id="how" className="section">
@@ -148,7 +152,7 @@ export default async function Home() {
               <span className="eyebrow">პროცესი</span>
               <h2>ზარიდან დასრულებულ სამუშაომდე</h2>
             </div>
-            <ol className="timeline">
+            <ol className="timeline" style={{ '--n': content.steps.length }}>
               {content.steps.map((x, i) => (
                 <li key={i} className="reveal" style={{ '--d': `${i * 70}ms` }}>
                   <span className="t-num">{String(i + 1).padStart(2, '0')}</span>

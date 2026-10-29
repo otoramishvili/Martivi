@@ -65,7 +65,7 @@ export default async function ServicePage({ params }) {
               {c.subs.map((sub, i) => (
                 <div key={i} className="job reveal" style={{ '--d': `${(i % 2) * 60}ms` }}>
                   <span className="job-icon">{c.icon}</span>
-                  <div className="job-text"><h3>{sub.name}</h3><p>{sub.text}</p></div>
+                  <div className="job-text"><h3>{sub.name}</h3>{sub.text ? <p>{sub.text}</p> : null}</div>
                   <OrderButton value={`${c.name} — ${sub.name}`} />
                 </div>
               ))}

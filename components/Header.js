@@ -12,6 +12,15 @@ const LINKS = [
 
 const pad = (n) => String(n).padStart(2, '0');
 
+function Logo() {
+  return (
+    <>
+      <img className="logo-img logo-on-dark" src="/logo-light.png" alt="Martivi" width="671" height="120" />
+      <img className="logo-img logo-on-light" src="/logo-dark.png" alt="" aria-hidden="true" width="671" height="120" />
+    </>
+  );
+}
+
 /* ---- small inline icons ---- */
 const I = {
   phone: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>,
@@ -77,9 +86,8 @@ export default function Header({ content }) {
     <>
       <header className={'hdr' + (scrolled ? ' is-solid' : '')}>
         <div className="wrap hdr-in">
-          <Link href="/" className="logo">
-            <span className="logo-mark">{(s.brand || 'ო').slice(0, 1)}</span>
-            <span className="logo-text"><b>{s.brand}</b><small>{s.tagline}</small></span>
+          <Link href="/" className="logo" aria-label={s.brand}>
+            <Logo />
           </Link>
 
           <nav className="hdr-nav" aria-label="მთავარი მენიუ">
@@ -126,9 +134,8 @@ export default function Header({ content }) {
       {/* ---- full-screen menu ---- */}
       <div className={'overlay' + (menu ? ' open' : '')} aria-hidden={!menu}>
         <div className="ov-top wrap">
-          <Link href="/" className="logo" onClick={() => setMenu(false)}>
-            <span className="logo-mark">{(s.brand || 'ო').slice(0, 1)}</span>
-            <span className="logo-text"><b>{s.brand}</b></span>
+          <Link href="/" className="logo" aria-label={s.brand} onClick={() => setMenu(false)}>
+            <img className="logo-img" src="/logo-light.png" alt={s.brand} width="671" height="120" />
           </Link>
           <button type="button" className="ov-close" aria-label="დახურვა" onClick={() => setMenu(false)}>{I.close}</button>
         </div>
