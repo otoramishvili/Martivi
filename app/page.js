@@ -17,14 +17,15 @@ const HERO_MAX = 8;
 export async function generateMetadata() {
   const { settings: s, categories } = await getContent();
   const title = homeTitle(s);
-  const description = homeDescription(s, categories);
+  const description = homeDescription(s);
   return {
     title: { absolute: title },
     description,
     keywords: keywords([
-      'ხელოსანი თბილისში', 'ხელოსნის გამოძახება', 'სახლის სერვისები', 'მუშახელი თბილისში', 'ხელოსანი',
+      'ხელოსანი თბილისში', 'ხელოსნის გამოძახება', 'მუშახელი თბილისში', 'მტვირთავები თბილისში', 'მუშის დაქირავება',
+      'გადაზიდვა თბილისში', 'ნაგვის გატანა', 'სამშენებლო ნარჩენების გატანა', 'სახლის სერვისები', 'ხელოსანი',
       ...categories.map((c) => `${c.name} ${CITY}`),
-      'Martivi', s.brand,
+      'Martivi', 'martivi.org', s.brand,
     ]),
     alternates: { canonical: '/' },
     openGraph: { type: 'website', locale: 'ka_GE', siteName: s.brand, url: '/', title, description },

@@ -7,7 +7,7 @@ import OrderButton from '@/components/OrderButton';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
 import { telHref, waHref } from '@/lib/format';
-import { JsonLd, serviceJsonLd, serviceTitle, serviceDescription, keywords, CITY } from '@/lib/seo';
+import { JsonLd, serviceJsonLd, serviceTitle, serviceDescription, serviceImage, keywords, CITY } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,13 +19,14 @@ export async function generateMetadata({ params }) {
   const title = serviceTitle(c);
   const description = serviceDescription(c, settings);
   const path = `/services/${c.id}`;
+  const image = { url: serviceImage(c), width: 1200, height: 630, alt: `${c.name} თბილისში — ${settings.brand}` };
   return {
     title,
     description,
-    keywords: keywords([`${c.name} ${CITY}`, `${c.name} თბილისში`, c.name, ...c.subs.map((x) => x.name), c.group, 'ხელოსანი თბილისში']),
+    keywords: keywords([`${c.name} თბილისში`, c.name, ...c.subs.map((x) => x.name), c.group, 'ხელოსანი თბილისში', settings.brand]),
     alternates: { canonical: path },
-    openGraph: { type: 'website', locale: 'ka_GE', siteName: settings.brand, url: path, title: `${title} | ${settings.brand}`, description },
-    twitter: { card: 'summary_large_image', title: `${title} | ${settings.brand}`, description },
+    openGraph: { type: 'website', locale: 'ka_GE', siteName: settings.brand, url: path, title: `${title} | ${settings.brand}`, description, images: [image] },
+    twitter: { card: 'summary_large_image', title: `${title} | ${settings.brand}`, description, images: [image.url] },
   };
 }
 

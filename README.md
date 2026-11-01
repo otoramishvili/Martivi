@@ -61,12 +61,16 @@ Blob-ში ინახება უახლესი ვერსია + 5 �
 
 ## SEO (Google)
 
-- **გვერდების სათაური და აღწერა** ავტომატურად იქმნება სერვისების სახელიდან + „თბილისში“ + ტელეფონი.
-  სურვილისამებრ ადმინში შეგიძლია ხელით ჩაწერო: „საიტის ტექსტები“ → Google სათაური/აღწერა,
-  ან თითოეულ კატეგორიაში → Google სათაური/აღწერა.
-- **სტრუქტურირებული მონაცემები (JSON-LD)**: ბიზნესი (HomeAndConstructionBusiness), სერვისები, FAQ, breadcrumbs.
-- **/sitemap.xml** და **/robots.txt** — ავტომატურად; ადმინი და API დაბლოკილია ინდექსაციისთვის.
-- **დომენის შემდეგ** Vercel → Settings → Environment Variables:
-  - `NEXT_PUBLIC_SITE_URL` = `https://შენი-დომენი` — canonical ბმულები, sitemap და *.vercel.app → დომენზე გადამისამართება.
-  - `GOOGLE_SITE_VERIFICATION` = Google Search Console-ის კოდი (HTML tag მეთოდის `content="..."` ნაწილი).
-  შემდეგ Redeploy.
+SEO არ ცვლის საიტის გარეგნობას ან ტექსტებს — ყველაფერი ის, რასაც Google კითხულობს.
+
+- **მისამართი**: canonical ბმულები, sitemap და Google-ის მონაცემები მიუთითებს `https://martivi.org`-ზე.
+  `martivi-two.vercel.app` და `www.martivi.org` ავტომატურად გადამისამართდება `martivi.org`-ზე (middleware.js).
+  სხვა დომენზე გადასვლისას Vercel-ში დაამატე `NEXT_PUBLIC_SITE_URL`.
+- **სათაურები და აღწერები** — `lib/seo-defaults.js` (მთავარი გვერდი და თითოეული სერვისი).
+  ადმინში შეიძლება შეიცვალოს: „საიტის ტექსტები“ ან „კატეგორიები“ → Google სათაური / აღწერა (ცარიელი = ავტომატური).
+- **სურათები**: `public/og/<სერვისი>.png` — გაზიარების სურათები (Facebook, WhatsApp, Google Images),
+  `public/logo-square.png` — ლოგო Google-ისთვის, `app/favicon.ico` — ხატულა ძიების შედეგებში.
+- **სტრუქტურირებული მონაცემები (JSON-LD)**: ბიზნესი, სერვისები, FAQ (მთავარ გვერდზე), breadcrumbs, ლოგო.
+- **/sitemap.xml** (სურათებით) და **/robots.txt** — ავტომატურად; ადმინი და API დახურულია ინდექსაციისთვის.
+- Google Search Console-ის კოდი (არასავალდებულო, თუ DNS-ით დაადასტურებ): Vercel → Environment Variables →
+  `GOOGLE_SITE_VERIFICATION`.

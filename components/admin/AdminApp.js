@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './admin.css';
+import { SERVICE_DEFAULTS } from '@/lib/seo-defaults';
 
 const TABS = [
   ['cats', '📂 კატეგორიები'],
@@ -322,7 +323,7 @@ function CategoriesTab({ data, update, sel, setSel }) {
               </div>
               <label><span>მოკლე აღწერა (ბარათზე)</span><input value={c.short} onChange={(e) => setCat('short', e.target.value)} /></label>
               <label><span>სრული აღწერა (სერვისის გვერდზე)</span><textarea rows={3} value={c.description} onChange={(e) => setCat('description', e.target.value)} /></label>
-              <label><span>Google სათაური (ცარიელი = „{c.name} თბილისში“)</span><input value={c.seoTitle || ''} onChange={(e) => setCat('seoTitle', e.target.value)} /></label>
+              <label><span>Google სათაური (ცარიელი = ავტომატური, ნაცრისფრად)</span><input value={c.seoTitle || ''} placeholder={SERVICE_DEFAULTS[c.id]?.title || `${c.name} თბილისში`} onChange={(e) => setCat('seoTitle', e.target.value)} /></label>
               <label><span>Google აღწერა, ~150 სიმბოლო (ცარიელი = ავტომატური)</span><textarea rows={2} value={c.seoDescription || ''} onChange={(e) => setCat('seoDescription', e.target.value)} /></label>
               <label>
                 <span>ბმული (URL) — მხოლოდ ლათინური ასოები და „-“</span>
