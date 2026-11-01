@@ -7,6 +7,7 @@ import OrderButton from '@/components/OrderButton';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
 import { telHref, waHref } from '@/lib/format';
+import { JsonLd, serviceJsonLd, serviceTitle, serviceDescription, keywords, CITY } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,8 +15,18 @@ export async function generateMetadata({ params }) {
   const { id } = await params;
   const { settings, categories } = await getContent();
   const c = categories.find((x) => x.id === id);
-  if (!c) return { title: settings.brand };
-  return { title: `${c.name} თბილისში | ${settings.brand}`, description: c.description || c.short };
+  if (!c) return { title: 'გვერდი ვერ მოიძებნა', robots: { index: false } };
+  const title = serviceTitle(c);
+  const description = serviceDescription(c, settings);
+  const path = `/services/${c.id}`;
+  return {
+    title,
+    description,
+    keywords: keywords([`${c.name} ${CITY}`, `${c.name} თბილისში`, c.name, ...c.subs.map((x) => x.name), c.group, 'ხელოსანი თბილისში']),
+    alternates: { canonical: path },
+    openGraph: { type: 'website', locale: 'ka_GE', siteName: settings.brand, url: path, title: `${title} | ${settings.brand}`, description },
+    twitter: { card: 'summary_large_image', title: `${title} | ${settings.brand}`, description },
+  };
 }
 
 export default async function ServicePage({ params }) {
@@ -27,6 +38,7 @@ export default async function ServicePage({ params }) {
 
   return (
     <>
+      <JsonLd data={serviceJsonLd(c, content)} />
       <Header content={content} />
       <RevealInit />
       <main>

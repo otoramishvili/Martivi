@@ -28,6 +28,8 @@ const SETTINGS = [
   ['facebook', 'Facebook ბმული'],
   ['instagram', 'Instagram ბმული (ცარიელი = „მალე დაემატება“)'],
   ['tiktok', 'TikTok ბმული (ცარიელი = „მალე დაემატება“)'],
+  ['seoTitle', 'Google — მთავარი გვერდის სათაური (ცარიელი = ავტომატური)'],
+  ['seoDescription', 'Google — მთავარი გვერდის აღწერა, ~150 სიმბოლო (ცარიელი = ავტომატური)', 'area'],
 ];
 
 const LISTS = {
@@ -320,6 +322,8 @@ function CategoriesTab({ data, update, sel, setSel }) {
               </div>
               <label><span>მოკლე აღწერა (ბარათზე)</span><input value={c.short} onChange={(e) => setCat('short', e.target.value)} /></label>
               <label><span>სრული აღწერა (სერვისის გვერდზე)</span><textarea rows={3} value={c.description} onChange={(e) => setCat('description', e.target.value)} /></label>
+              <label><span>Google სათაური (ცარიელი = „{c.name} თბილისში“)</span><input value={c.seoTitle || ''} onChange={(e) => setCat('seoTitle', e.target.value)} /></label>
+              <label><span>Google აღწერა, ~150 სიმბოლო (ცარიელი = ავტომატური)</span><textarea rows={2} value={c.seoDescription || ''} onChange={(e) => setCat('seoDescription', e.target.value)} /></label>
               <label>
                 <span>ბმული (URL) — მხოლოდ ლათინური ასოები და „-“</span>
                 <input value={c.id} onChange={(e) => setId(e.target.value)} />

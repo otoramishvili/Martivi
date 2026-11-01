@@ -6,6 +6,7 @@ import ContactSection from '@/components/ContactSection';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
 import { telHref, waHref } from '@/lib/format';
+import { JsonLd, homeJsonLd, homeTitle, homeDescription, keywords, CITY } from '@/lib/seo';
 
 // Read content.json on every request, so admin changes show immediately.
 export const dynamic = 'force-dynamic';
@@ -15,9 +16,19 @@ const HERO_MAX = 8;
 
 export async function generateMetadata() {
   const { settings: s, categories } = await getContent();
+  const title = homeTitle(s);
+  const description = homeDescription(s, categories);
   return {
-    title: `${s.tagline} | ${s.brand}`,
-    description: `${s.brand}: ${categories.map((c) => c.name).join(', ')}.`,
+    title: { absolute: title },
+    description,
+    keywords: keywords([
+      'ხელოსანი თბილისში', 'ხელოსნის გამოძახება', 'სახლის სერვისები', 'მუშახელი თბილისში', 'ხელოსანი',
+      ...categories.map((c) => `${c.name} ${CITY}`),
+      'Martivi', s.brand,
+    ]),
+    alternates: { canonical: '/' },
+    openGraph: { type: 'website', locale: 'ka_GE', siteName: s.brand, url: '/', title, description },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
@@ -29,6 +40,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={homeJsonLd(content)} />
       <Header content={content} />
       <RevealInit />
       <main>
