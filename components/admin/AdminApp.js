@@ -25,6 +25,9 @@ const SETTINGS = [
   ['heroText', 'მთავარი — ტექსტი', 'area'],
   ['formTitle', 'ფორმის სათაური'],
   ['formText', 'ფორმის ტექსტი', 'area'],
+  ['facebook', 'Facebook ბმული'],
+  ['instagram', 'Instagram ბმული (ცარიელი = „მალე დაემატება“)'],
+  ['tiktok', 'TikTok ბმული (ცარიელი = „მალე დაემატება“)'],
 ];
 
 const LISTS = {

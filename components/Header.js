@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { telHref, waHref } from '@/lib/format';
+import SocialLinks from '@/components/SocialLinks';
 
 const LINKS = [
   ['/#how', 'როგორ ვმუშაობთ'],
@@ -14,10 +15,17 @@ const pad = (n) => String(n).padStart(2, '0');
 
 function Logo() {
   return (
-    <>
-      <img className="logo-img logo-on-dark" src="/logo-light.png" alt="Martivi" width="671" height="120" />
-      <img className="logo-img logo-on-light" src="/logo-dark.png" alt="" aria-hidden="true" width="671" height="120" />
-    </>
+    <span className="logo-badge">
+      <img
+        className="logo-img"
+        src="/logo-full.webp"
+        srcSet="/logo-full.webp 720w, /logo-full@1.5x.webp 1080w"
+        sizes="140px"
+        alt="Martivi — ყველა საქმე ერთ სივრცეში"
+        width="720"
+        height="420"
+      />
+    </span>
   );
 }
 
@@ -131,11 +139,14 @@ export default function Header({ content }) {
         </div>
       </header>
 
+      {/* ---- fixed social links (left edge, all pages) ---- */}
+      <SocialLinks settings={s} className="social-rail" />
+
       {/* ---- full-screen menu ---- */}
       <div className={'overlay' + (menu ? ' open' : '')} aria-hidden={!menu}>
         <div className="ov-top wrap">
           <Link href="/" className="logo" aria-label={s.brand} onClick={() => setMenu(false)}>
-            <img className="logo-img" src="/logo-light.png" alt={s.brand} width="671" height="120" />
+            <Logo />
           </Link>
           <button type="button" className="ov-close" aria-label="დახურვა" onClick={() => setMenu(false)}>{I.close}</button>
         </div>
@@ -156,7 +167,8 @@ export default function Header({ content }) {
             <a className="btn btn-primary btn-lg" href={telHref(s.phone)}>{I.phone} {s.phone}</a>
             <a className="btn btn-wa btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">{I.wa} WhatsApp</a>
           </div>
-          <div className="ov-meta"><span>🕘 {s.hours}</span><span>📍 {s.area}</span><a href={`mailto:${s.email}`}>✉️ {s.email}</a></div>
+          <SocialLinks settings={s} className="social-menu" />
+          <div className="ov-meta"><span>🕘 {s.hours}</span><a href={`mailto:${s.email}`}>✉️ {s.email}</a></div>
         </div>
       </div>
 

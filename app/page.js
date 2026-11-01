@@ -82,7 +82,6 @@ export default async function Home() {
               </div>
               <div className="hp-info">
                 <div><span>🕘</span>{s.hours}</div>
-                <div><span>📍</span>{s.area}</div>
               </div>
             </aside>
           </div>
