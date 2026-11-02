@@ -6,6 +6,7 @@ import ContactSection from '@/components/ContactSection';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
 import { telHref, waHref } from '@/lib/format';
+import WaIcon from '@/components/WaIcon';
 import { JsonLd, homeJsonLd, homeTitle, homeDescription, keywords, CITY } from '@/lib/seo';
 
 // Read content.json on every request, so admin changes show immediately.
@@ -63,7 +64,7 @@ export default async function Home() {
 
               <div className="hero-btns">
                 <a className="btn btn-primary btn-lg" href={telHref(s.phone)}>📞 {s.phone}</a>
-                <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+                <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer"><WaIcon /> WhatsApp</a>
               </div>
 
               {s.heroPoints?.length ? (
@@ -210,7 +211,7 @@ export default async function Home() {
               </div>
               <div className="cta-actions">
                 <a className="btn btn-white btn-lg" href={telHref(s.phone)}>📞 {s.phone}</a>
-                <a className="btn btn-outline-white btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+                <a className="btn btn-outline-white btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer"><WaIcon /> WhatsApp</a>
               </div>
             </div>
           </div>

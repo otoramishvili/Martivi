@@ -27,6 +27,7 @@ const SETTINGS = [
   ['formTitle', 'ფორმის სათაური'],
   ['formText', 'ფორმის ტექსტი', 'area'],
   ['facebook', 'Facebook ბმული'],
+  ['youtube', 'YouTube ბმული (ცარიელი = „მალე დაემატება“)'],
   ['instagram', 'Instagram ბმული (ცარიელი = „მალე დაემატება“)'],
   ['tiktok', 'TikTok ბმული (ცარიელი = „მალე დაემატება“)'],
   ['seoTitle', 'Google — მთავარი გვერდის სათაური (ცარიელი = ავტომატური)'],

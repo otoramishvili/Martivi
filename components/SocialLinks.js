@@ -8,6 +8,7 @@ const DEFAULTS = {
   facebook: 'https://www.facebook.com/profile.php?id=61595664435265',
   instagram: '',
   tiktok: '',
+  youtube: '',
 };
 
 const SOON = 'მალე დაემატება';
@@ -44,10 +45,16 @@ const ICONS = {
   ),
 };
 
-const LABELS = { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' };
+ICONS.youtube = (
+  <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true">
+    <path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8c1.6.4 7.8.4 7.8.4s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15.2V8.8l5.2 3.2z" />
+  </svg>
+);
+
+const LABELS = { facebook: 'Facebook', youtube: 'YouTube', instagram: 'Instagram', tiktok: 'TikTok' };
 
 export function socialList(settings = {}) {
-  return ['facebook', 'instagram', 'tiktok']
+  return ['facebook', 'youtube', 'instagram', 'tiktok']
     .map((k) => {
       const url = isUnset(settings[k]) ? DEFAULTS[k] : String(settings[k]).trim();
       return { key: k, url, soon: !url };

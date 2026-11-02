@@ -7,6 +7,7 @@ import OrderButton from '@/components/OrderButton';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
 import { telHref, waHref } from '@/lib/format';
+import WaIcon from '@/components/WaIcon';
 import { JsonLd, serviceJsonLd, serviceTitle, serviceDescription, serviceImage, keywords, CITY } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -60,7 +61,7 @@ export default async function ServicePage({ params }) {
                 <p className="lead">{c.description || c.short}</p>
                 <div className="hero-btns">
                   <a className="btn btn-primary btn-lg" href={telHref(s.phone)}>📞 დარეკე</a>
-                  <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+                  <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer"><WaIcon /> WhatsApp</a>
                 </div>
               </div>
             </div>
