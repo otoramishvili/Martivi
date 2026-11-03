@@ -492,3 +492,25 @@ h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em}
   .social-rail svg{width:16px;height:16px}
 }
 .btn-glass .wa-ico{color:#5eb012}
+
+/* ============ second navbar menu: სარემონტო სამუშაოები ============ */
+.ov-extra{display:grid;gap:10px}
+.ov-extra-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent-2)}
+/* narrow desktops: keep every navbar link inside the capsule */
+@media (min-width:1101px) and (max-width:1320px){
+  .hdr-in{gap:12px}
+  .hdr-link{padding:9px 10px;font-size:14px}
+  .hdr-nav{gap:0}
+}
+/* navbar links don't fit (measured in Header.js): keep them measurable but hidden, show ☰ */
+@media (min-width:821px){
+  .hdr.nav-compact .hdr-nav{position:absolute;visibility:hidden;pointer-events:none;left:0;top:0}
+  .hdr.nav-compact .menu-btn{display:grid}
+  .hdr.nav-compact .hdr-right{margin-left:auto}
+}
+/* tight navbar: phone button shows only the icon (round, like WhatsApp) */
+@media (min-width:821px){
+  .hdr.fit-tight .phone-pill{padding:5px;gap:0}
+  .hdr.fit-tight .pp-num,.hdr.fit-tight .pp-arrow{display:none}
+}
+@media (min-width:1321px){.hdr-link{padding:9px 10px;font-size:14px}.hdr-nav{gap:0}}

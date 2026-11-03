@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { telHref, waHref } from '@/lib/format';
+import { telHref, waHref, repairsOf, repairsTitle } from '@/lib/format';
 import SocialLinks from '@/components/SocialLinks';
 
 const LINKS = [
@@ -62,11 +62,13 @@ function useOpenNow(hours) {
 export default function Header({ content }) {
   const s = content.settings;
   const cats = content.categories;
+  const repairs = repairsOf(content);
+  const rTitle = repairsTitle(s);
   const [scrolled, setScrolled] = useState(false);
-  const [mega, setMega] = useState(false);
+  const [mega, setMega] = useState(false); // false | 'services' | 'repairs'
   const [menu, setMenu] = useState(false);
   const open = useOpenNow(s.hours);
-  const megaRef = useRef(null);
+  const navRef = useRef(null);
   const closeTimer = useRef(null);
 
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function Header({ content }) {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     const onKey = (e) => { if (e.key === 'Escape') { setMega(false); setMenu(false); } };
-    const onClick = (e) => { if (megaRef.current && !megaRef.current.contains(e.target)) setMega(false); };
+    const onClick = (e) => { if (navRef.current && !navRef.current.contains(e.target)) setMega(false); };
     window.addEventListener('keydown', onKey);
     document.addEventListener('click', onClick);
     return () => {
@@ -86,21 +88,57 @@ export default function Header({ content }) {
 
   useEffect(() => { document.body.style.overflow = menu ? 'hidden' : ''; }, [menu]);
 
-  const hoverOpen = () => { clearTimeout(closeTimer.current); setMega(true); };
+  // If the navbar links don't fit next to the logo and buttons (depends on screen width and font),
+  // hide them and show the ☰ menu button instead of letting the navbar overflow.
+  const inRef = useRef(null);
+  const [fit, setFit] = useState('full'); // full | tight (phone button = icon only) | compact (links in ☰ menu)
+  const pillFull = useRef(0);
+  useEffect(() => {
+    const box = inRef.current;
+    if (!box) return;
+    const check = () => {
+      const nav = box.querySelector('.hdr-nav');
+      const logo = box.querySelector('.logo');
+      const right = box.querySelector('.hdr-right');
+      const pill = box.querySelector('.phone-pill');
+      if (!nav || !logo || !right || !pill) return;
+      if (!box.closest('.hdr').classList.contains('fit-tight') && pill.offsetWidth) pillFull.current = pill.offsetWidth;
+      const btn = right.querySelector('.menu-btn');
+      const btnW = btn && getComputedStyle(btn).display !== 'none' ? btn.offsetWidth + 10 : 0;
+      const cs = getComputedStyle(box);
+      const gap = parseFloat(cs.columnGap) || 0;
+      const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      const rightFull = right.offsetWidth - btnW - pill.offsetWidth + (pillFull.current || pill.offsetWidth);
+      const base = logo.offsetWidth + nav.scrollWidth + gap * 2 + pad + 24;
+      const avail = box.clientWidth;
+      if (!nav.scrollWidth) return setFit('full'); // small screens: links already in the menu (CSS)
+      if (base + rightFull <= avail) return setFit('full');
+      if (base + rightFull - (pillFull.current || pill.offsetWidth) + 48 <= avail) return setFit('tight');
+      setFit('compact');
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(box);
+    document.fonts?.ready?.then(check);
+    window.addEventListener('resize', check);
+    return () => { ro.disconnect(); window.removeEventListener('resize', check); };
+  }, []);
+
+  const hoverOpen = (key) => { clearTimeout(closeTimer.current); setMega(key); };
   const hoverClose = () => { closeTimer.current = setTimeout(() => setMega(false), 160); };
   const phoneShort = String(s.phone || '').replace(/^\+995\s*/, '');
 
   return (
     <>
-      <header className={'hdr' + (scrolled ? ' is-solid' : '')}>
-        <div className="wrap hdr-in">
+      <header className={'hdr' + (scrolled ? ' is-solid' : '') + (fit === 'tight' ? ' fit-tight' : '') + (fit === 'compact' ? ' fit-tight nav-compact' : '')}>
+        <div className="wrap hdr-in" ref={inRef}>
           <Link href="/" className="logo" aria-label={s.brand}>
             <Logo />
           </Link>
 
-          <nav className="hdr-nav" aria-label="მთავარი მენიუ">
-            <div className={'mega-wrap' + (mega ? ' open' : '')} ref={megaRef} onMouseEnter={hoverOpen} onMouseLeave={hoverClose}>
-              <button type="button" className="hdr-link mega-btn" aria-expanded={mega} onClick={() => setMega((v) => !v)}>
+          <nav className="hdr-nav" aria-label="მთავარი მენიუ" ref={navRef}>
+            <div className={'mega-wrap' + (mega === 'services' ? ' open' : '')} onMouseEnter={() => hoverOpen('services')} onMouseLeave={hoverClose}>
+              <button type="button" className="hdr-link mega-btn" aria-expanded={mega === 'services'} onClick={() => setMega((v) => (v === 'services' ? false : 'services'))}>
                 სერვისები <span className="chev">{I.chev}</span>
               </button>
 
@@ -123,6 +161,34 @@ export default function Header({ content }) {
                 </div>
               </div>
             </div>
+
+            {/* ---- სარემონტო სამუშაოები (admin tab „სარემონტო სამუშაოები“) ---- */}
+            {repairs.length ? (
+            <div className={'mega-wrap' + (mega === 'repairs' ? ' open' : '')} onMouseEnter={() => hoverOpen('repairs')} onMouseLeave={hoverClose}>
+              <button type="button" className="hdr-link mega-btn" aria-expanded={mega === 'repairs'} onClick={() => setMega((v) => (v === 'repairs' ? false : 'repairs'))}>
+                {rTitle} <span className="chev">{I.chev}</span>
+              </button>
+
+              <div className="mega" role="menu">
+                <div className="mega-grid">
+                  {repairs.map((c, i) => (
+                    <Link key={c.id} href={`/remonti/${c.id}`} className="mega-item" onClick={() => setMega(false)}>
+                      <span className="mega-icon">{c.icon}</span>
+                      <span className="mega-text"><b>{c.name}</b><small>{c.short}</small></span>
+                      <span className="mega-num">{pad(i + 1)}</span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="mega-side">
+                  <span className="mega-side-label">არ იცი, რომელი გჭირდება?</span>
+                  <b>დაგვირეკე და ერთად გავარკვევთ</b>
+                  <a className="btn btn-primary" href={telHref(s.phone)}>{I.phone} {s.phone}</a>
+                  <a className="btn btn-wa" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">{I.wa} WhatsApp</a>
+                  <span className="mega-hours">🕘 {s.hours}</span>
+                </div>
+              </div>
+            </div>
+            ) : null}
 
             {LINKS.map(([href, label]) => <a key={href} href={href} className="hdr-link">{label}</a>)}
           </nav>
@@ -152,7 +218,7 @@ export default function Header({ content }) {
         </div>
         <div className="ov-body wrap">
           <ol className="ov-links">
-            {[['/#services', 'სერვისები'], ...LINKS].map(([href, label], i) => (
+            {[['/#services', 'სერვისები'], ...(repairs.length ? [[`/remonti/${repairs[0].id}`, rTitle]] : []), ...LINKS].map(([href, label], i) => (
               <li key={href} style={{ '--i': i }}>
                 <a href={href} onClick={() => setMenu(false)}><span>{pad(i + 1)}</span>{label}</a>
               </li>
@@ -163,6 +229,16 @@ export default function Header({ content }) {
               <Link key={c.id} href={`/services/${c.id}`} onClick={() => setMenu(false)}><span>{c.icon}</span>{c.name}</Link>
             ))}
           </div>
+          {repairs.length ? (
+            <div className="ov-extra">
+              <span className="ov-extra-title">{rTitle}</span>
+              <div className="ov-services">
+                {repairs.map((c) => (
+                  <Link key={c.id} href={`/remonti/${c.id}`} onClick={() => setMenu(false)}><span>{c.icon}</span>{c.name}</Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
           <div className="ov-cta">
             <a className="btn btn-primary btn-lg" href={telHref(s.phone)}>{I.phone} {s.phone}</a>
             <a className="btn btn-wa btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer">{I.wa} WhatsApp</a>

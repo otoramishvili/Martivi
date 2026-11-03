@@ -5,6 +5,7 @@ import { SERVICE_DEFAULTS } from '@/lib/seo-defaults';
 
 const TABS = [
   ['cats', '📂 კატეგორიები'],
+  ['repairs', '🔨 სარემონტო სამუშაოები'],
   ['settings', '📝 საიტის ტექსტები'],
   ['guide', '🧭 გზამკვლევი'],
   ['benefits', '⭐ უპირატესობები'],
@@ -15,6 +16,7 @@ const TABS = [
 
 const SETTINGS = [
   ['brand', 'ბრენდის სახელი'],
+  ['repairsTitle', 'ნავბარი — მეორე მენიუს სახელი (ცარიელი = „სარემონტო სამუშაოები“)'],
   ['tagline', 'ქვესათაური (ლოგოს ქვეშ)'],
   ['phone', 'ტელეფონი'],
   ['whatsapp', 'WhatsApp ნომერი (მხოლოდ ციფრები, 995…)'],
@@ -68,6 +70,7 @@ export default function AdminApp() {
   const [dirty, setDirty] = useState(false);
   const [tab, setTab] = useState('cats');
   const [sel, setSel] = useState(0);
+  const [selR, setSelR] = useState(0);
   const [toast, setToast] = useState(null);
   const [pw, setPw] = useState('');
   const [loginErr, setLoginErr] = useState('');
@@ -201,6 +204,9 @@ export default function AdminApp() {
         </nav>
         <main className="panel">
           {tab === 'cats' && <CategoriesTab data={data} update={update} sel={sel} setSel={setSel} />}
+          {tab === 'repairs' && <CategoriesTab key="repairs" listKey="repairs" basePath="/remonti"
+            title={`სარემონტო სამუშაოები — ${String(data.settings.repairsTitle || '').trim() || 'სარემონტო სამუშაოები'} (ნავბარის მეორე მენიუ)`}
+            data={data} update={update} sel={selR} setSel={setSelR} />}
           {tab === 'settings' && <SettingsTab data={data} update={update} />}
           {tab === 'areas' && <AreasTab data={data} update={update} />}
           {LISTS[tab] && <Repeater key={tab} listKey={tab} cfg={LISTS[tab]} data={data} update={update} />}
@@ -266,19 +272,20 @@ function Repeater({ listKey, cfg, data, update }) {
   );
 }
 
-function CategoriesTab({ data, update, sel, setSel }) {
-  const cats = data.categories;
+function CategoriesTab({ data, update, sel, setSel, listKey = 'categories', basePath = '/services', title = 'კატეგორიები და ქვეკატეგორიები' }) {
+  const cats = data[listKey] || [];
+  const L = (d) => (d[listKey] ||= []);
   const i = Math.min(sel, cats.length - 1);
   const c = cats[i];
   const groups = [...new Set(cats.map((x) => x.group).filter(Boolean))];
-  const setCat = (k, v) => update((d) => { d.categories[i][k] = v; });
+  const setCat = (k, v) => update((d) => { L(d)[i][k] = v; });
   const setId = (raw) => {
     const id = raw.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     if (cats.some((x, idx) => idx !== i && x.id === id)) return; // keep URLs unique
     update((d) => {
-      const old = d.categories[i].id;
-      d.categories[i].id = id;
-      (d.guide || []).forEach((g) => { if (g.category === old) g.category = id; });
+      const old = L(d)[i].id;
+      L(d)[i].id = id;
+      if (listKey === 'categories') (d.guide || []).forEach((g) => { if (g.category === old) g.category = id; });
     });
   };
 
@@ -286,7 +293,7 @@ function CategoriesTab({ data, update, sel, setSel }) {
     const name = prompt('კატეგორიის სახელი:');
     if (!name) return;
     update((d) => {
-      d.categories.push({ id: uniqueSlug(name, d.categories), name, icon: '🔧', group: c?.group || 'სერვისები', short: '', description: '', subs: [] });
+      L(d).push({ id: uniqueSlug(name, L(d)), name, icon: '🔧', group: c?.group || (listKey === 'repairs' ? 'რემონტი' : 'სერვისები'), short: '', description: '', subs: [] });
     });
     setSel(cats.length);
   }
@@ -294,7 +301,7 @@ function CategoriesTab({ data, update, sel, setSel }) {
   return (
     <>
       <div className="head">
-        <h2>კატეგორიები და ქვეკატეგორიები</h2>
+        <h2>{title}</h2>
         <button className="btn primary" onClick={addCategory}>+ ახალი კატეგორია</button>
       </div>
       <div className="cats">
@@ -304,8 +311,8 @@ function CategoriesTab({ data, update, sel, setSel }) {
               <span className="ic">{x.icon}</span>
               <span className="nm">{x.name}<small>{x.subs.length} ქვეკატეგორია</small></span>
               <Tools i={idx} n={cats.length}
-                onMove={(dir) => { update((d) => move(d.categories, idx, dir)); setSel(idx + dir); }}
-                onDelete={() => { update((d) => { d.categories.splice(idx, 1); }); setSel(Math.max(0, idx - 1)); }} />
+                onMove={(dir) => { update((d) => move(L(d), idx, dir)); setSel(idx + dir); }}
+                onDelete={() => { update((d) => { L(d).splice(idx, 1); }); setSel(Math.max(0, idx - 1)); }} />
             </div>
           ))}
         </div>
@@ -330,15 +337,15 @@ function CategoriesTab({ data, update, sel, setSel }) {
                 <span>ბმული (URL) — მხოლოდ ლათინური ასოები და „-“</span>
                 <input value={c.id} onChange={(e) => setId(e.target.value)} />
               </label>
-              <p className="hint">გვერდი: <code>/services/{c.id}</code> · <a href={`/services/${c.id}`} target="_blank">ნახვა ↗</a> (შენახვის შემდეგ)</p>
+              <p className="hint">გვერდი: <code>{basePath}/{c.id}</code> · <a href={`${basePath}/${c.id}`} target="_blank">ნახვა ↗</a> (შენახვის შემდეგ)</p>
 
               <div className="head sub">
                 <h3>ქვეკატეგორიები / სამუშაოები</h3>
-                <button className="btn" onClick={() => update((d) => { d.categories[i].subs.push({ name: 'ახალი სამუშაო', text: '' }); })}>+ დამატება</button>
+                <button className="btn" onClick={() => update((d) => { L(d)[i].subs.push({ name: 'ახალი სამუშაო', text: '' }); })}>+ დამატება</button>
               </div>
               <div className="subs">
                 {c.subs.map((s, si) => {
-                  const setSub = (k) => (e) => update((d) => { d.categories[i].subs[si][k] = e.target.value; });
+                  const setSub = (k) => (e) => update((d) => { L(d)[i].subs[si][k] = e.target.value; });
                   return (
                     <div key={si} className="sub-row">
                       <div className="sub-fields">
@@ -346,8 +353,8 @@ function CategoriesTab({ data, update, sel, setSel }) {
                         <input className="wide" placeholder="მოკლე აღწერა" value={s.text} onChange={setSub('text')} />
                       </div>
                       <Tools i={si} n={c.subs.length}
-                        onMove={(dir) => update((d) => move(d.categories[i].subs, si, dir))}
-                        onDelete={() => update((d) => { d.categories[i].subs.splice(si, 1); })} />
+                        onMove={(dir) => update((d) => move(L(d)[i].subs, si, dir))}
+                        onDelete={() => update((d) => { L(d)[i].subs.splice(si, 1); })} />
                     </div>
                   );
                 })}
