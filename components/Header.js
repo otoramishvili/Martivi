@@ -170,7 +170,7 @@ export default function Header({ content }) {
               </button>
 
               <div className="mega" role="menu">
-                <div className="mega-grid">
+                <div className={'mega-grid' + (repairs.length > 12 ? ' many' : '')}>
                   {repairs.map((c, i) => (
                     <Link key={c.id} href={`/remonti/${c.id}`} className="mega-item" onClick={() => setMega(false)}>
                       <span className="mega-icon">{c.icon}</span>
