@@ -51,7 +51,12 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap"
         />
       </head>
-      <body id="top">{children}</body>
+      <body id="top">
+        {children}
+        {/* Vercel Web Analytics — visitor counts in Vercel → project → Analytics (works only on Vercel) */}
+        <script dangerouslySetInnerHTML={{ __html: 'window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};' }} />
+        <script defer src="/_vercel/insights/script.js" />
+      </body>
     </html>
   );
 }
