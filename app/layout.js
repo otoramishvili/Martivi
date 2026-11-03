@@ -1,4 +1,5 @@
 import './globals.css';
+import VisitTracker from '@/components/VisitTracker';
 import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/seo';
 
@@ -53,6 +54,7 @@ export default function RootLayout({ children }) {
       </head>
       <body id="top">
         {children}
+        <VisitTracker />
         {/* Vercel Web Analytics — visitor counts in Vercel → project → Analytics (works only on Vercel) */}
         <script dangerouslySetInnerHTML={{ __html: 'window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};' }} />
         <script defer src="/_vercel/insights/script.js" />

@@ -12,6 +12,7 @@ const TABS = [
   ['steps', '🔢 პროცესი'],
   ['faq', '❓ FAQ'],
   ['areas', '📍 უბნები'],
+  ['stats', '📊 ვიზიტორები'],
 ];
 
 const SETTINGS = [
@@ -209,6 +210,7 @@ export default function AdminApp() {
             data={data} update={update} sel={selR} setSel={setSelR} />}
           {tab === 'settings' && <SettingsTab data={data} update={update} />}
           {tab === 'areas' && <AreasTab data={data} update={update} />}
+          {tab === 'stats' && <StatsTab data={data} />}
           {LISTS[tab] && <Repeater key={tab} listKey={tab} cfg={LISTS[tab]} data={data} update={update} />}
         </main>
       </div>
@@ -404,6 +406,110 @@ function AreasTab({ data, update }) {
       <div className="box">
         <LinesField label="თითო ხაზზე ერთი უბანი" rows={16} initial={data.areas.join('\n')}
           onChange={(t) => update((d) => { d.areas = lines(t); })} />
+      </div>
+    </>
+  );
+}
+
+
+/* ---------- visitors (lib/stats.js, Upstash Redis) ---------- */
+function StatsTab({ data }) {
+  const [state, setState] = useState({ loading: true });
+  const load = useCallback(async () => {
+    setState((x) => ({ ...x, loading: true }));
+    try {
+      const r = await fetch('/api/admin/stats', { cache: 'no-store' });
+      const j = await r.json();
+      setState({ loading: false, ...j });
+    } catch (e) {
+      setState({ loading: false, ok: false, error: 'კავშირის შეცდომა' });
+    }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const pageName = (p) => {
+    if (p === '/') return 'მთავარი გვერდი';
+    const [, kind, id] = p.split('/');
+    const list = kind === 'services' ? data.categories : kind === 'remonti' ? data.repairs || [] : [];
+    const c = list.find((x) => x.id === id);
+    return c ? `${c.icon} ${c.name}` : p;
+  };
+
+  const head = (
+    <div className="head">
+      <h2>📊 ვიზიტორები</h2>
+      <button className="btn" onClick={load} disabled={state.loading}>{state.loading ? 'იტვირთება…' : '↻ განახლება'}</button>
+    </div>
+  );
+
+  if (state.loading && !state.stats && state.enabled === undefined) return <>{head}<p className="empty">იტვირთება…</p></>;
+  if (state.ok === false) return <>{head}<div className="box"><p className="err">{state.error}</p></div></>;
+  if (!state.enabled) {
+    return (
+      <>
+        {head}
+        <div className="box stats-setup">
+          <p><b>ვიზიტორების დათვლა ჯერ არ არის ჩართული.</b> საჭიროა უფასო მონაცემთა ბაზა (ერთხელ, 2 წუთი):</p>
+          <ol>
+            <li>Vercel → შენი პროექტი <b>martivi</b> → <b>Storage</b> → <b>Create Database</b>.</li>
+            <li>აირჩიე <b>Upstash → Redis</b> (უფასო გეგმა / Free), რეგიონი — <b>Frankfurt</b>, და <b>Create</b>.</li>
+            <li>დააჭირე <b>Connect Project</b> → აირჩიე <b>martivi</b> → <b>Connect</b>.</li>
+            <li><b>Deployments</b> → ბოლო deploy → <b>⋯ → Redeploy</b>.</li>
+          </ol>
+          <p className="hint">ამის შემდეგ ყოველი ვიზიტი დაითვლება და აქ გამოჩნდება. localhost-ზე ვიზიტები არ ითვლება, თუ ბაზის კოდები .env.local-ში არ ჩაწერე.</p>
+        </div>
+      </>
+    );
+  }
+
+  const st = state.stats;
+  const max = Math.max(1, ...st.daily.map((d) => d.views));
+  const short = (d) => d.slice(8, 10) + '.' + d.slice(5, 7);
+  return (
+    <>
+      {head}
+      <div className="stats-cards">
+        {[['დღეს', st.today], ['ბოლო 7 დღე', st.week], ['ბოლო 30 დღე', st.month]].map(([label, v]) => (
+          <div key={label} className="box stat-card">
+            <span>{label}</span>
+            <b>{v.visitors}</b><small>ვიზიტორი</small>
+            <em>{v.views} გვერდის ნახვა</em>
+          </div>
+        ))}
+      </div>
+
+      <div className="box">
+        <div className="head sub" style={{ marginTop: 0 }}><h3>ბოლო 30 დღე</h3><span className="hint">■ ვიზიტორები · ▢ ნახვები</span></div>
+        <div className="stats-chart">
+          {st.daily.map((d) => (
+            <div key={d.day} className="sc-col" title={`${d.day}: ${d.visitors} ვიზიტორი, ${d.views} ნახვა`}>
+              <div className="sc-bars">
+                <i className="sc-views" style={{ height: `${(d.views / max) * 100}%` }} />
+                <i className="sc-visitors" style={{ height: `${(d.visitors / max) * 100}%` }} />
+              </div>
+              <small>{short(d.day)}</small>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="stats-lists">
+        <div className="box">
+          <h3>ყველაზე ნანახი გვერდები (30 დღე)</h3>
+          {st.topPages.length ? (
+            <table className="stats-table"><tbody>
+              {st.topPages.map((x) => <tr key={x.name}><td><a href={x.name} target="_blank" rel="noreferrer">{pageName(x.name)}</a></td><td>{x.count}</td></tr>)}
+            </tbody></table>
+          ) : <p className="empty">ჯერ არაფერია</p>}
+        </div>
+        <div className="box">
+          <h3>საიდან მოვიდნენ (30 დღე)</h3>
+          {st.topSources.length ? (
+            <table className="stats-table"><tbody>
+              {st.topSources.map((x) => <tr key={x.name}><td>{x.name}</td><td>{x.count}</td></tr>)}
+            </tbody></table>
+          ) : <p className="empty">ჯერ არაფერია</p>}
+        </div>
       </div>
     </>
   );
