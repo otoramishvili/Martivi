@@ -521,3 +521,9 @@ h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em}
 .mega-grid.many .mega-text b{font-size:14px}
 .mega-grid.many .mega-text small{font-size:12px}
 .mega-grid.many .mega-num{display:none}
+
+/* hero call button: green phone icon */
+.call-ic{color:#23701a;flex:none}
+/* subcategory that is a web address: clickable link (above the card's own link) */
+.site-link{position:relative;z-index:3;color:var(--accent-d,#23701a);text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+.site-link:hover{color:var(--accent)}

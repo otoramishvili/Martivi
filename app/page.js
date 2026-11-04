@@ -5,7 +5,7 @@ import SearchBox from '@/components/SearchBox';
 import ContactSection from '@/components/ContactSection';
 import RevealInit from '@/components/RevealInit';
 import { getContent } from '@/lib/content';
-import { telHref, waHref } from '@/lib/format';
+import { telHref, waHref, siteLink } from '@/lib/format';
 import WaIcon from '@/components/WaIcon';
 import { JsonLd, homeJsonLd, homeTitle, homeDescription, keywords, CITY } from '@/lib/seo';
 
@@ -63,7 +63,7 @@ export default async function Home() {
               <SearchBox categories={cats} />
 
               <div className="hero-btns">
-                <a className="btn btn-primary btn-lg" href={telHref(s.phone)}>📞 {s.phone}</a>
+                <a className="btn btn-primary btn-lg" href={telHref(s.phone)}><svg className="call-ic" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" /></svg> {s.phone}</a>
                 <a className="btn btn-glass btn-lg" href={waHref(s.whatsapp)} target="_blank" rel="noopener noreferrer"><WaIcon /> WhatsApp</a>
               </div>
 
@@ -127,7 +127,9 @@ export default async function Home() {
                   </div>
                   <h3><Link href={link(c)}>{c.name}</Link></h3>
                   <p>{c.short}</p>
-                  <ul>{c.subs.slice(0, 4).map((sub, j) => <li key={j}>{sub.name}</li>)}</ul>
+                  <ul>{c.subs.slice(0, 4).map((sub, j) => <li key={j}>{siteLink(sub.name)
+                    ? <a className="site-link" href={siteLink(sub.name)} target="_blank" rel="noopener noreferrer">{sub.name} ↗</a>
+                    : sub.name}</li>)}</ul>
                   <span className="more">ყველა სამუშაო <span className="card-arrow">→</span></span>
                 </article>
               ))}

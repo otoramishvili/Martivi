@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import ContactSection from '@/components/ContactSection';
 import OrderButton from '@/components/OrderButton';
 import RevealInit from '@/components/RevealInit';
-import { telHref, waHref } from '@/lib/format';
+import { telHref, waHref, siteLink } from '@/lib/format';
 import WaIcon from '@/components/WaIcon';
 import { JsonLd, serviceJsonLd, serviceTitle, serviceDescription, serviceImage, keywords } from '@/lib/seo';
 
@@ -68,7 +68,9 @@ export default function CategoryPage({ content, c, list, basePath, listTitle, li
               {c.subs.map((sub, i) => (
                 <div key={i} className="job reveal" style={{ '--d': `${(i % 2) * 60}ms` }}>
                   <span className="job-icon">{c.icon}</span>
-                  <div className="job-text"><h3>{sub.name}</h3>{sub.text ? <p>{sub.text}</p> : null}</div>
+                  <div className="job-text"><h3>{siteLink(sub.name)
+                    ? <a className="site-link" href={siteLink(sub.name)} target="_blank" rel="noopener noreferrer">{sub.name} ↗</a>
+                    : sub.name}</h3>{sub.text ? <p>{sub.text}</p> : null}</div>
                   <OrderButton value={`${c.name} — ${sub.name}`} />
                 </div>
               ))}
